@@ -1,7 +1,7 @@
 import socket
 import random
 
-SERVER_NAME = "Server of John Q. Smith"
+SERVER_NAME = "Server of Eliana Morin"
 SERVER_PORT = 5000
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
