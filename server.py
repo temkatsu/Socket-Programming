@@ -2,7 +2,7 @@ import socket
 import random
 
 SERVER_NAME = "Server of Eliana Morin"
-SERVER_PORT = 5000
+SERVER_PORT = 5300
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(("", SERVER_PORT))
@@ -15,6 +15,7 @@ while True:
 
     connection_socket, client_address = server_socket.accept()
     message = connection_socket.recv(1024).decode()
+    print(f"Received: {message}")
 
     parts = message.split(",")
 
@@ -36,14 +37,16 @@ while True:
     print("Client number:", client_number)
     print("Server number:", server_number)
     print("Sum:", total)
-    print()
 
     # Send server name and server number to client
-    response = SERVER_NAME + "," + str(server_number)
+    response = SERVER_NAME + ", " + str(server_number)
+    print(f"Sending: {response}")
     connection_socket.send(response.encode())
 
     connection_socket.close()
-
+    print("Connection Socket Closed")
+    print()
+    
 server_socket.close()
 
 print("Server terminated.")
