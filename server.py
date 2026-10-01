@@ -5,48 +5,84 @@ SERVER_NAME = "Server of Eliana Morin"
 SERVER_PORT = 5300
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(("", SERVER_PORT))
-server_socket.listen(1)
 
-print(SERVER_NAME)
-print("Server is waiting for a client...")
+try:
+    server_socket.bind(("", SERVER_PORT))
+    server_socket.listen(1)
 
-while True:
+    print(SERVER_NAME)
+    print("Server is waiting for a client...")
 
-    connection_socket, client_address = server_socket.accept()
-    message = connection_socket.recv(1024).decode()
-    print(f"Received: {message}")
+    while True:
 
-    parts = message.split(",")
+        try:
+            connection_socket, client_address = server_socket.accept()
+            print("Client connected.")
 
-    client_name = parts[0]
-    client_number = int(parts[1])
+            try:
+                message = connection_socket.recv(1024).decode()
 
-    # Check if client number is between 1 and 100
-    if client_number < 1 or client_number > 100:
-        connection_socket.close()
-        break
+                if not message:
+                    print("Client sent no data.")
+                    connection_socket.close()
+                    continue
 
-    print("Client name:", client_name)
-    print("Server name:", SERVER_NAME)
+                print(f"Received: {message}")
 
-    server_number = random.randint(1, 100)
+                parts = message.split(",")
 
-    total = client_number + server_number
+                if len(parts) != 2:
+                    print("Invalid message format.")
+                    connection_socket.close()
+                    continue
 
-    print("Client number:", client_number)
-    print("Server number:", server_number)
-    print("Sum:", total)
+                client_name = parts[0].strip()
 
-    # Send server name and server number to client
-    response = SERVER_NAME + ", " + str(server_number)
-    print(f"Sending: {response}")
-    connection_socket.send(response.encode())
+                try:
+                    client_number = int(parts[1].strip())
+                except ValueError:
+                    print("Client number is not an integer.")
+                    connection_socket.close()
+                    continue
 
-    connection_socket.close()
-    print("Connection Socket Closed")
-    print()
-    
-server_socket.close()
+                if client_number < 1 or client_number > 100:
+                    print("Client number must be between 1 and 100.")
+                    connection_socket.close()
+                    continue
 
-print("Server terminated.")
+                print("Client name:", client_name)
+                print("Server name:", SERVER_NAME)
+
+                server_number = random.randint(1, 100)
+
+                total = client_number + server_number
+
+                print("Client number:", client_number)
+                print("Server number:", server_number)
+                print("Sum:", total)
+
+                response = SERVER_NAME + ", " + str(server_number)
+                print(f"Sending: {response}")
+
+                connection_socket.send(response.encode())
+
+            except UnicodeDecodeError:
+                print("Could not decode the message from the client.")
+
+            except socket.error as e:
+                print("Socket error:", e)
+
+            finally:
+                connection_socket.close()
+                print("Connection Socket Closed")
+                print()
+
+        except socket.error as e:
+            print("Error accepting connection:", e)
+
+except OSError as e:
+    print("Could not start server:", e)
+
+finally:
+    server_socket.close()
+    print("Server terminated.")
