@@ -45,10 +45,11 @@ try:
                     connection_socket.close()
                     continue
 
+                # Check if client number is between 1 and 100
                 if client_number < 1 or client_number > 100:
                     print("Client number must be between 1 and 100.")
                     connection_socket.close()
-                    continue
+                    break
 
                 print("Client name:", client_name)
                 print("Server name:", SERVER_NAME)
@@ -61,6 +62,7 @@ try:
                 print("Server number:", server_number)
                 print("Sum:", total)
 
+                # Send server name and server number to client
                 response = SERVER_NAME + ", " + str(server_number)
                 print(f"Sending: {response}")
 
